@@ -18,7 +18,7 @@ from settings import (API_MESSAGE_URL_FAIL,
 def check_request(request):
     try:
         return request.get_json()
-    except:
+    except Exception:
         raise InvalidAPIUsage(API_MESSAGE_BODY_FAIL)
 
 
