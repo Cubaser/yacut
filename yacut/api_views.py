@@ -1,18 +1,13 @@
-import re
+from http import HTTPStatus
 
 from flask import jsonify, request
 
-from . import app, db
+from . import app
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
-from .views import get_unique_short_id, check_unique_short_id
-from settings import (API_MESSAGE_URL_FAIL,
-                      API_MESSAGE_BODY_FAIL,
-                      API_MESSAGE_DOUBLE_CUSTOM_ID,
-                      API_MESSAGE_BAD_CUSTOM_ID,
+from settings import (API_MESSAGE_BODY_FAIL,
                       API_MESSAGE_CUSTOM_ID_FAIL,
-                      CUSTOM_ID_PATTERN,
-                      CUSTOM_ID_MAX_LEN)
+                      API_MESSAGE_URL_FAIL)
 
 
 def check_request(request):
@@ -28,28 +23,22 @@ def create_short_id():
     if 'url' not in data:
         raise InvalidAPIUsage(API_MESSAGE_URL_FAIL)
     if 'custom_id' in data:
-        if check_unique_short_id(data['custom_id']):
-            raise InvalidAPIUsage(API_MESSAGE_DOUBLE_CUSTOM_ID)
-        elif (not re.fullmatch(CUSTOM_ID_PATTERN, data['custom_id'])
-              or len(data['custom_id']) > CUSTOM_ID_MAX_LEN):
-            raise InvalidAPIUsage(API_MESSAGE_BAD_CUSTOM_ID)
-        else:
-            unique_short_id = get_unique_short_id(data['custom_id'])
-    else:
-        unique_short_id = get_unique_short_id()
+        url = URLMap(
+            original=data['url'],
+            short=data['custom_id']
+        )
+        url.save_api_data()
+        return jsonify(url.to_dict()), HTTPStatus.CREATED
     url = URLMap(
-        original=data['url'],
-        short=unique_short_id
+        original=data['url']
     )
-    db.session.add(url)
-    db.session.commit()
-    url.short = url.short
-    return jsonify(url.to_dict()), 201
+    url.save_api_data()
+    return jsonify(url.to_dict()), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<short_id>/', methods=['GET'])
-def gets_short_id(short_id):
-    url = URLMap.query.filter_by(short=short_id).first()
+def get_short_id(short_id):
+    url = URLMap.get_url_by_short_id(short_id).first()
     if not url:
-        raise InvalidAPIUsage(API_MESSAGE_CUSTOM_ID_FAIL, 404)
-    return jsonify({'url': url.original}), 200
+        raise InvalidAPIUsage(API_MESSAGE_CUSTOM_ID_FAIL, HTTPStatus.NOT_FOUND)
+    return jsonify({'url': url.original}), HTTPStatus.OK

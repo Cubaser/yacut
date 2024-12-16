@@ -3,10 +3,10 @@ import string
 
 
 CHARS = string.ascii_letters + string.digits
-ORIGINAL_LINK_MIN_MAX = (1, 128)
+MAX_RETRIES = 10
 SHORT_LINK_LENGTH = 6
 CUSTOM_ID_MAX_LEN = 16
-CUSTOM_ID_PATTERN = r'[A-Za-z0-9]*'
+CUSTOM_ID_PATTERN = r'[A-Za-z0-9]*$'
 MESSAGE_URL_DONE = 'Ваша короткая ссылка готова:'
 MESSAGE_URL_FAIL = 'Предложенный вариант короткой ссылки уже существует.'
 API_MESSAGE_URL_FAIL = '\"url\" является обязательным полем!'

@@ -1,24 +1,22 @@
 {% extends 'base.html' %} 
 {% block title %}404. ОГО! Теперь нам не повезло.{% endblock %}
 {% block content %}
-<main>
-  <section class="container my-5">
-    <div class="container">
-      <div class="row ">
-        <div class="col-sm">
-        </div>
-        <div class="col-sm">
-          <p class="text-center">
-            <h5 class="text-center">
-              <p>ОГО! Теперь нам не повезло, это 500.</p>
-              <a href="{{ url_for('index_view') }}">Давай на главную</a>
-            </h5>
-          </p>
-        </div>
-        <div class="col-sm">
-        </div>
+<section class="container my-5">
+  <div class="container">
+    <div class="row ">
+      <div class="col-sm">
+      </div>
+      <div class="col-sm">
+        <p class="text-center">
+          <h5 class="text-center">
+            <p>ОГО! Теперь нам не повезло, это 500.</p>
+            <a href="{{ url_for('index_view') }}">Давай на главную</a>
+          </h5>
+        </p>
+      </div>
+      <div class="col-sm">
       </div>
     </div>
-  </section>
-</main>
+  </div>
+</section>
 {% endblock %}
