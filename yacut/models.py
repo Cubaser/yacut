@@ -52,8 +52,8 @@ class URLMap(db.Model):
         db.session.commit()
 
     def validate_short_id(self, short_id):
-        if (not re.fullmatch(CUSTOM_ID_PATTERN, short_id)
-              or len(short_id) > CUSTOM_ID_MAX_LEN):
+        if (not re.fullmatch(CUSTOM_ID_PATTERN, short_id) or
+                len(short_id) > CUSTOM_ID_MAX_LEN):
             return True
         return False
 
