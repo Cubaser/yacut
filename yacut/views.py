@@ -26,6 +26,7 @@ def index_view():
             flash(error.message, 'error')
     return render_template('index.html', form=form)
 
+
 @app.route('/<short>', methods=['GET'])
 def redirect_view(short):
     url = URLMap.get_url_by_short_id(short).first_or_404()
