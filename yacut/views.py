@@ -1,35 +1,30 @@
-from flask import redirect, render_template
+from flask import flash, redirect, render_template
 
 from . import app
 from .forms import LinkForm
 from .models import URLMap
-from settings import MESSAGE_URL_DONE, MESSAGE_URL_FAIL
+from .error_handlers import InvalidAPIUsage
+from settings import MESSAGE_URL_DONE
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     form = LinkForm()
     if form.validate_on_submit():
-        if (form.custom_id.data and
-                URLMap.check_unique_short_id(form.custom_id.data)):
+        try:
+            url = URLMap.create_short_link(
+                original=form.original_link.data,
+                custom_id=form.custom_id.data
+            )
+            flash(MESSAGE_URL_DONE)
             return render_template(
                 'index.html',
-                message=MESSAGE_URL_FAIL,
+                url=url,
                 form=form
             )
-        url = URLMap(
-            original=form.original_link.data,
-            short=form.custom_id.data
-        )
-        url.save_data()
-        return render_template(
-            'index.html',
-            url=url,
-            message=MESSAGE_URL_DONE,
-            form=form
-        )
+        except InvalidAPIUsage as error:
+            flash(error.message, 'error')
     return render_template('index.html', form=form)
-
 
 @app.route('/<short>', methods=['GET'])
 def redirect_view(short):

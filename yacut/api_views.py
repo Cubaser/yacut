@@ -22,17 +22,16 @@ def create_short_id():
     data = check_request(request)
     if 'url' not in data:
         raise InvalidAPIUsage(API_MESSAGE_URL_FAIL)
-    if 'custom_id' in data:
-        url = URLMap(
+    data = check_request(request)
+    if 'url' not in data:
+        raise InvalidAPIUsage(API_MESSAGE_URL_FAIL)
+    try:
+        url = URLMap.create_short_link(
             original=data['url'],
-            short=data['custom_id']
+            custom_id=data.get('custom_id')
         )
-        url.save_api_data()
-        return jsonify(url.to_dict()), HTTPStatus.CREATED
-    url = URLMap(
-        original=data['url']
-    )
-    url.save_api_data()
+    except InvalidAPIUsage as error:
+        raise error
     return jsonify(url.to_dict()), HTTPStatus.CREATED
 
 
