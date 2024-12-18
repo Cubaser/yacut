@@ -40,15 +40,14 @@ class URLMap(db.Model):
             short_id = ''.join(random.choices(CHARS, k=SHORT_LINK_LENGTH))
             if not cls.check_unique_short_id(short_id):
                 return short_id
-        return cls.get_url_by_short_id()
+        return cls.get_unique_short_id()
 
     @classmethod
     def check_unique_short_id(cls, short_id):
-        return cls.get_url_by_short_id(short_id).first() is not None
-
-    @classmethod
-    def get_url_by_short_id(cls, short_id):
-        return cls.query.filter_by(short=short_id)
+        url = cls.query.filter_by(short=short_id).first()
+        if url is not None:
+            return url
+        return False
 
     @classmethod
     def create_short_link(cls, original, custom_id):

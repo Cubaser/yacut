@@ -37,7 +37,7 @@ def create_short_id():
 
 @app.route('/api/id/<short_id>/', methods=['GET'])
 def get_short_id(short_id):
-    url = URLMap.get_url_by_short_id(short_id).first()
+    url = URLMap.check_unique_short_id(short_id)
     if not url:
         raise InvalidAPIUsage(API_MESSAGE_CUSTOM_ID_FAIL, HTTPStatus.NOT_FOUND)
     return jsonify({'url': url.original}), HTTPStatus.OK

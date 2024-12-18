@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template
+from flask import abort, flash, redirect, render_template
 
 from . import app
 from .forms import LinkForm
@@ -29,5 +29,7 @@ def index_view():
 
 @app.route('/<short>', methods=['GET'])
 def redirect_view(short):
-    url = URLMap.get_url_by_short_id(short).first_or_404()
+    url = URLMap.check_unique_short_id(short)
+    if not url:
+        abort(404)
     return redirect(url.original)
